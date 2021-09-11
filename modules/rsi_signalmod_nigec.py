@@ -35,10 +35,10 @@ DEFAULT_CONFIG_FILE = 'config.yml'
 config_file = args.config if args.config else DEFAULT_CONFIG_FILE
 parsed_config = load_config(config_file)
 
-INTERVAL = Interval.INTERVAL_15_MINUTES # Main Timeframe for analysis on Oscillators and Moving Averages (15 mins)
-INTERVAL2 = Interval.INTERVAL_5_MINUTES # Secondary Timeframe for analysis on BUY signals for next lowest timescale | Check Entry Point (5)
+INTERVAL = Interval.INTERVAL_1_DAY # Main Timeframe for analysis on Oscillators and Moving Averages (15 mins)
+INTERVAL2 = Interval.INTERVAL_1_HOUR # Secondary Timeframe for analysis on BUY signals for next lowest timescale | Check Entry Point (5)
 
-OSC_INDICATORS = ['RSI', 'Stoch.RSI', 'Mom', 'MACD', 'UO', 'BBP'] # Indicators to use in Oscillator analysis
+OSC_INDICATORS = ['RSI', 'Stoch.RSI', 'BBP'] # Indicators to use in Oscillator analysis
 OSC_THRESHOLD = 5 # Must be less or equal to number of items in OSC_INDICATORS (5)
 MA_INDICATORS = ['EMA10', 'EMA20', 'SMA10', 'SMA20'] # Indicators to use in Moving Averages analysis
 MA_THRESHOLD = 3 # Must be less or equal to number of items in MA_INDICATORS (3)
