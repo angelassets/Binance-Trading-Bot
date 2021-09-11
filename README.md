@@ -27,6 +27,15 @@ This Binance trading bot analyses the changes in price across all coins on Bina
 - Reporting to discord channel and telegram optional
 - Automatic changing of settings from config file on the fly based on wins / losses
 
+## TO DO:
+-HTML Front end that reads the coins_bought.json file
+-Coins sold are not deleted from the jsonfile, but a ney logical fiels 'SOLD' to be added
+-The front end will list coins bought and sold in seperate lists along with stats
+-A link on each item in the lists will allow to:
+   a) delete sell the pair from bought list
+   b) purge a pair from the sold list
+ ... soliciting help from community...
+
 ## WIKI
 https://github.com/goranjovic55/Binance-Trading-Bot/wiki
 
