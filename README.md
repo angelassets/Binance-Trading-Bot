@@ -29,7 +29,7 @@ This Binance trading bot analyses the changes in price across all coins on Bina
 
 ## TO DO:
 - HTML Front end that reads the coins_bought.json file
-- Coins sold are not deleted from the json file, but a new logical fiels 'SOLD' to be added
+- Coins sold are not deleted from the json file, but a new logical field 'SOLD' to be added
 - The front end will list coins bought and sold in seperate lists along with stats
 - A link on each item in the lists will allow to:
 -    a) sell a pair from 'Bought' list
