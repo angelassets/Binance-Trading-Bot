@@ -32,8 +32,8 @@ This Binance trading bot analyses the changes in price across all coins on Bina
 - Coins sold are not deleted from the json file, but a new logical field 'SOLD' to be added
 - The front end will list coins bought and sold in seperate lists along with stats
 - A link on each item in the lists will allow to:
--    a) sell a pair from 'Bought' list
--    b) purge a pair from the 'Sold' list
+-    a) sell a pair prematurely from 'Bought' list
+-    b) purge pair(s) from the 'Sold' list
 - ... soliciting help from community...
 
 ## WIKI
