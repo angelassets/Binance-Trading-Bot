@@ -39,7 +39,7 @@ INTERVAL = Interval.INTERVAL_1_DAY # Main Timeframe for analysis on Oscillators 
 INTERVAL2 = Interval.INTERVAL_1_HOUR # Secondary Timeframe for analysis on BUY signals for next lowest timescale | Check Entry Point (5)
 
 OSC_INDICATORS = ['RSI', 'Stoch.RSI', 'BBP'] # Indicators to use in Oscillator analysis
-OSC_THRESHOLD = 5 # Must be less or equal to number of items in OSC_INDICATORS (5)
+OSC_THRESHOLD = 3 # Must be less or equal to number of items in OSC_INDICATORS (5)
 MA_INDICATORS = ['EMA10', 'EMA20', 'SMA10', 'SMA20'] # Indicators to use in Moving Averages analysis
 MA_THRESHOLD = 3 # Must be less or equal to number of items in MA_INDICATORS (3)
 MA_SUMMARY = 13 # Buy indicators out of 26 to use in Moving Averages INTERVAL analysis (13)
