@@ -1,0 +1,93 @@
+
+.crypt-table-striped tbody tr:nth-of-type(even){
+    background-color: #f7fbff; 
+}
+
+ .crypt-table-market-cap{
+    background: none;
+    font-size: 15px;
+    color: #fff;
+}
+
+.crypt-table-market-cap thead{
+    background: #1f2638;
+}
+.crypt-table-market-cap tbody{
+    background: #0e162d;
+}
+
+.crypt-table-market-cap thead tr th{
+    text-align: center;
+    padding: 15px 0;
+    vertical-align: middle;
+    border: none;
+}
+
+.crypt-table-market-cap tbody tr:hover{
+    background: #242c40 !important
+}
+.crypt-table-market-cap tbody tr th{
+    padding: 25px 20px;
+    text-align: center;
+}
+.crypt-table-market-cap tbody tr td{
+    padding: 25px 0;
+    text-align: center;
+    border: none !important;
+}
+@media screen and (max-width: 500px) {
+    .crypt-table-market-cap tbody tr td{
+        min-width: 103px;
+    }
+}
+.crypt-table-market-cap tbody tr td a{
+    color: #555;
+}
+.crypt-table-market-cap tbody tr td a{
+    color: #fff;
+}
+.crypt-table-market-cap tbody tr td:last-child{
+    max-width: 120px;
+    padding: 0;
+}
+.crypt-table-market-cap tbody tr td:last-child canvas{
+    display: inline !important;
+    margin-top: 15px;
+} 
+
+
+.action_btn {
+margin-top:16px;
+border-radius: 4px;
+display: inline-flex;
+padding: 0 16px;
+background: #fff;
+cursor: pointer;
+font-size: 13px;
+  color: #777;
+/*! margin-bottom: 8px; */
+line-height: 30px;
+box-sizing: border-box;
+align-items: center;
+}
+
+.action_btn:hover{
+    scale:1.1;
+}
+
+.title{
+    width: 100%;
+    text-align: center;
+    padding-top: 50px;
+    color: white;
+    background: #0e162d;
+    height: 150px;
+}
+
+.title p{
+    display:  inline;
+}
+
+.title #counter{
+    color:#49c279;
+}

@@ -38,6 +38,7 @@ parsed_config = load_config(config_file)
 INTERVAL = Interval.INTERVAL_1_DAY # Main Timeframe for analysis on Oscillators and Moving Averages (15 mins)
 INTERVAL2 = Interval.INTERVAL_1_HOUR # Secondary Timeframe for analysis on BUY signals for next lowest timescale | Check Entry Point (5)
 
+#SC_INDICATORS = ['RSI', 'Stoch.RSI', 'Mom', 'MACD', 'UO', 'BBP'] # Indicators to use in Oscillator analysis
 OSC_INDICATORS = ['RSI', 'Stoch.RSI', 'BBP'] # Indicators to use in Oscillator analysis
 OSC_THRESHOLD = 3 # Must be less or equal to number of items in OSC_INDICATORS (5)
 MA_INDICATORS = ['EMA10', 'EMA20', 'SMA10', 'SMA20'] # Indicators to use in Moving Averages analysis
@@ -135,10 +136,15 @@ def analyze(pairs):
         SMA10 = round(analysis.indicators['SMA10'],2)
         SMA20 = round(analysis.indicators['SMA20'],2)
         SMA30 = round(analysis.indicators['SMA30'],2)
+        #UPPER = round(analysis.indicators['BB.upper:20'],2)
+        #LOWER = round(analysis.indicators['BB.lower:20'],2)
         BUY_SIGS = round(analysis.summary['BUY'],0)
         BUY_SIGS2 = round(analysis2.summary['BUY'],0)
         STOCH_DIFF = round(STOCH_K - STOCH_D,2)
         RSI_DIFF = round(RSI - RSI1,2)
+
+        #print([UPPER])
+        #print([LOWER])
 
         if FULL_LOG:
          if (RSI < 80) and (BUY_SIGS >= 10) and (STOCH_DIFF >= 0.01) and (RSI_DIFF >= 0.01):

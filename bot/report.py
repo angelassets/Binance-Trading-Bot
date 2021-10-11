@@ -39,13 +39,13 @@ def txcolor(input: float) -> str:
 def discord_avatar() -> str:
 # Custom coin avatar dependant on PAIR_WITH
 # Fallback image is a nice Binance logo, yay!
-    DISCORD_AVATAR =  "https://i.imgur.com/w1vS5Oc.png"
+    DISCORD_AVATAR =  ""
     if PAIR_WITH == 'ETH':
-        DISCORD_AVATAR =  "https://i.imgur.com/L9Txc9F.jpeg"
+        DISCORD_AVATAR =  ""
     if PAIR_WITH == 'BTC':
-        DISCORD_AVATAR =  "https://i.imgur.com/oIeAiEo.jpeg"
+        DISCORD_AVATAR =  ""
     if PAIR_WITH == 'USDT':
-        DISCORD_AVATAR =  "https://i.imgur.com/VyOdlRS.jpeg"
+        DISCORD_AVATAR =  ""
     return DISCORD_AVATAR
 
 # code for fixing errors with multiple coins buy not writing to trades.txt

@@ -103,8 +103,8 @@ def get_price(add_to_historical: bool = True) -> Dict:
         if coin['symbol'] == 'BNB' + PAIR_WITH:
             session_struct['bnb_current_price'] = Decimal(coin['price'])
 
-        if any(item + PAIR_WITH == coin['symbol'] for item in session_struct['tickers']) and all(item not in coin['symbol'] for item in EXCLUDED_PAIRS):
-            initial_price[coin['symbol']] = { 'price': Decimal(coin['price']), 'time': datetime.now()}
+        #if any(item + PAIR_WITH == coin['symbol'] for item in session_struct['tickers']) and all(item not in coin['symbol'] for item in EXCLUDED_PAIRS):
+        initial_price[coin['symbol']] = { 'price': Decimal(coin['price']), 'time': datetime.now()}
 
     if add_to_historical:
         hsp_head += 1

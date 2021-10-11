@@ -20,9 +20,9 @@ parsed_config = load_config(config_file)
 
 MY_EXCHANGE = 'BINANCE'
 MY_SCREENER = 'CRYPTO'
-MY_FIRST_INTERVAL = Interval.INTERVAL_1_MINUTE
-MY_SECOND_INTERVAL = Interval.INTERVAL_5_MINUTES
-MY_THIRD_INTERVAL = Interval.INTERVAL_15_MINUTES
+MY_FIRST_INTERVAL = Interval.INTERVAL_5_MINUTES
+MY_SECOND_INTERVAL = Interval.INTERVAL_15_MINUTES
+MY_THIRD_INTERVAL = Interval.INTERVAL_1_HOUR
 TA_BUY_THRESHOLD = 13 # How many of the 26 indicators to indicate a buy
 PAIR_WITH = parsed_config['trading_options']['PAIR_WITH']
 TICKERS = parsed_config['trading_options']['TICKERS_LIST']
@@ -110,7 +110,7 @@ def analyze(pairs):
 
         if (first_recommendation == "BUY" or first_recommendation == "STRONG_BUY") and (second_recommendation == "BUY" or second_recommendation == "STRONG_BUY") and \
             (third_recommendation == "BUY" or third_recommendation == "STRONG_BUY"):
-                if first_RSI <= 67 and second_RSI <= 67 and third_RSI <= 67:
+                if first_RSI <= 50 and second_RSI <= 50 and third_RSI <= 50:
                     signal_coins[pair] = pair
 
                     if FULL_LOG:

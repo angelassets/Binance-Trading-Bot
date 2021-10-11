@@ -1,3 +1,5 @@
+XVG
+VGX
 EUR
 USD
 GBP

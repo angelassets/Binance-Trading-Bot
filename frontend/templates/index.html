@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Binance Trading Bot</title>
+		<link rel="stylesheet" href="css/bootstrap.min.css">
+		<link rel="stylesheet" href="css/styles.css">
+
+	</head>
+	<body>                      <div class="title">
+					<h2>Binance Trading Bot</h2>
+					<p id="timermessage"> </p><p id="counter"></p>
+				    </div>
+		<div class="row mt-5 ml-2 mr-2">
+			<div class="col">
+				<div class="table-responsive">
+					<h4> Coin Bought </h4>
+				<table id="table-id" class="table table-striped js-sort-table crypt-table-market-cap">
+					<thead>
+						<tr>
+							<th>symbol</th>
+							<th class="js-sort-number">bought_at</th>
+							<th class="js-sort-number">volume</th>
+							<th class="js-sort-number">current profit</th>
+							<th class="pr-3"> action </th>
+						</tr>
+					</thead>
+					<tbody id="tbody-buy">
+					<tbody>
+				</table>
+				</div>
+			</div>
+		
+			<div class="col">
+				<div class="table-responsive">
+					<h4> Coin Sold </h4>
+				<table id="table-id" class="table table-striped js-sort-table crypt-table-market-cap">
+					<thead>
+						<tr>
+							<th>symbol</th>
+							<th class="js-sort-number">bought_at</th>
+							<th class="js-sort-number">volume</th>
+							<th class="js-sort-number">profit</th>
+							<th class="pr-3"> action </th>
+						</tr>
+					</thead>
+					<tbody id="tbody-sold">
+					<tbody>
+				</table>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript" src="js/jquery.js"></script>
+		<script type="text/javascript" src="js/script.js"></script>
+		<script type="text/javascript" src="js/sort-table.js"></script>
+		
+	</body>
+</html>

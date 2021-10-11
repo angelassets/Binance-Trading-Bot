@@ -276,10 +276,15 @@ coins_bought_file_path = 'coins_bought.json'
 if TEST_MODE:
    coins_bought_file_path = 'test_' + coins_bought_file_path
 
-# if saved coins_bought json file exists and it's not empty then load it
-if os.path.isfile(coins_bought_file_path) and os.stat(coins_bought_file_path).st_size!= 0:
-    with open(coins_bought_file_path) as file:
-            coins_bought = simplejson.load(file, use_decimal=True)
+def updateCoinBought():
+    global coins_bought
+    # if saved coins_bought json file exists and it's not empty then load it
+    if os.path.isfile(coins_bought_file_path) and os.stat(coins_bought_file_path).st_size!= 0:
+        with open(coins_bought_file_path) as file:
+                coins_bought = simplejson.load(file, use_decimal=True)
+    return coins_bought
+
+updateCoinBought()
 
 # Initiate the conneciton error counters
 READ_TIMEOUT_COUNT=0

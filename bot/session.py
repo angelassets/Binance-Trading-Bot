@@ -26,10 +26,9 @@ import simplejson
 from bot.settings import *
 
 # code that saves settings to session file and loads it from it so we can transfer session from one instance of bot to another
-
+WAIT = False
 def session(type: str) -> None:
 #various session calculations like uptime 24H gain profit risk to reward ratio unrealised profit etc
-
     global session_struct, settings_struct
 
     if type == 'calc':
@@ -60,7 +59,6 @@ def session(type: str) -> None:
 # saving session info to file during work
 
     if type == 'save':
-
         session_info = {}
         session_info_file_path = 'session_info.json'
         session_info = {
@@ -85,7 +83,6 @@ def session(type: str) -> None:
             'market_resistance': session_struct['market_resistance'],
             'market_support': session_struct['market_support'],
             'trade_slots': session_struct['trade_slots'],
-
             'trade_support': trading_struct['trade_support'],
             'trade_resistance': trading_struct['trade_resistance'],
             'sum_won_trades': trading_struct['sum_won_trades'],

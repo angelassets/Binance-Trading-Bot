@@ -1,7 +1,7 @@
 # MAIN NET
 prod:
-  access_key: replace_me
-  secret_key: replace_me
+  access_key: 8pBduNZXNCbh3jb2J2TK2jHoCOhKCxpsitSoCO57cj15u460Hs4cN6bwRUIoMxzn 
+  secret_key: tccIpw3COUm8gdxAE8Mqtuvk6uDJ2BLF7uoyZsctGE3ekTDXUmHeoFJU5PutuMD0
 
 # TEST NET
 test:

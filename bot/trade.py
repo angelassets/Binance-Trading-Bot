@@ -225,7 +225,7 @@ def buy() -> Tuple[Dict, Dict, Dict]:
             # Log, announce, and report trade
             print('Order returned, saving order to file')
 
-            REPORT = str(f"BUY: bought {orders[coin]['volume']} {coin} - average price: {orders[coin]['avgPrice']} {PAIR_WITH}")
+            REPORT = str(f"BUY : {orders[coin]['volume']} {coin} - {orders[coin]['avgPrice']} {PAIR_WITH}")
 
             report_add(REPORT)
 
@@ -247,52 +247,126 @@ def sell_coins() -> Dict:
     session_struct['unrealised_percent'] = 0
 
     for coin in list(coins_bought):
-
-        BUY_PRICE = Decimal(coins_bought[coin]['bought_at'])
-        # coinTakeProfit is the price at which to 'take profit' based on config % markup
-        coinTakeProfit = BUY_PRICE + ((BUY_PRICE * coins_bought[coin]['take_profit']) / Decimal('100'))
-        # coinStopLoss is the price at which to 'stop losses' based on config % markdown
-        coinStopLoss = BUY_PRICE + ((BUY_PRICE * coins_bought[coin]['stop_loss']) / Decimal('100'))
-        # coinHoldingTimeLimit is the time limit for holding onto a coin
-        coinHoldingTimeLimit = Decimal(coins_bought[coin]['timestamp']) + settings_struct['HOLDING_TIME_LIMIT']
-        lastPrice = last_price[coin]['price']
-        LAST_PRICE = "{:.8f}".format(lastPrice)
-        buyPrice = Decimal(coins_bought[coin]['bought_at'])
-        BUY_PRICE = "{:.8f}". format(buyPrice)
-
-        # Note: priceChange and priceChangeWithFee are percentages!
-        priceChange = Decimal((lastPrice - buyPrice) / buyPrice * Decimal('100'))
-
-        profit_estimate = (QUANTITY*(priceChange))/100
-
-        # check that the price is above the take profit and readjust coinStopLoss and coinTakeProfit accordingly if trialing stop loss used
-        if lastPrice > coinTakeProfit and USE_TRAILING_STOP_LOSS:
-        # increasing coinTakeProfit by TRAILING_TAKE_PROFIT (essentially next time to readjust coinStopLoss)
-            coins_bought[coin]['take_profit'] = priceChange + settings_struct['TRAILING_TAKE_PROFIT']
-            coins_bought[coin]['stop_loss'] = coins_bought[coin]['take_profit'] - settings_struct['TRAILING_STOP_LOSS']
-            if DEBUG: print(f"{coin} TP reached, adjusting TP {coins_bought[coin]['take_profit']:.{decimals()}f} and SL {coins_bought[coin]['stop_loss']:.{decimals()}f} accordingly to lock-in profit")
+        # only sell coin that are not already sold
+        
+        if(coins_bought[coin]["sold"]):
             continue
+        else:
+            BUY_PRICE = Decimal(coins_bought[coin]['bought_at'])
+            # coinTakeProfit is the price at which to 'take profit' based on config % markup
+            coinTakeProfit = BUY_PRICE + ((BUY_PRICE * coins_bought[coin]['take_profit']) / Decimal('100'))
+            # coinStopLoss is the price at which to 'stop losses' based on config % markdown
+            coinStopLoss = BUY_PRICE + ((BUY_PRICE * coins_bought[coin]['stop_loss']) / Decimal('100'))
+            # coinHoldingTimeLimit is the time limit for holding onto a coin
+            coinHoldingTimeLimit = Decimal(coins_bought[coin]['timestamp']) + settings_struct['HOLDING_TIME_LIMIT']
+            lastPrice = last_price[coin]['price']
+            LAST_PRICE = "{:.8f}".format(lastPrice)
+            buyPrice = Decimal(coins_bought[coin]['bought_at'])
+            BUY_PRICE = "{:.8f}". format(buyPrice)
 
-        current_time = round(time.time() * 1000)
-#           print(f'TL:{coinHoldingTimeLimit}, time: {current_time} HOLDING_TIME_LIMIT: {HOLDING_TIME_LIMIT}, TimeLeft: {(coinHoldingTimeLimit - current_time)/1000/60} ')
+            # Note: priceChange and priceChangeWithFee are percentages!
+            priceChange = Decimal((lastPrice - buyPrice) / buyPrice * Decimal('100'))
 
-        trade_calculations('holding', priceChange)
+            profit_estimate = (QUANTITY*(priceChange))/100
 
-        if coinHoldingTimeLimit < current_time and priceChange > settings_struct['HOLDING_PRICE_THRESHOLD']:
-           holding_timeout_sell_trigger = True
+            # check that the price is above the take profit and readjust coinStopLoss and coinTakeProfit accordingly if trialing stop loss used
+            if lastPrice > coinTakeProfit and USE_TRAILING_STOP_LOSS:
+                # increasing coinTakeProfit by TRAILING_TAKE_PROFIT (essentially next time to readjust coinStopLoss)
+                coins_bought[coin]['take_profit'] = priceChange + settings_struct['TRAILING_TAKE_PROFIT']
+                coins_bought[coin]['stop_loss'] = coins_bought[coin]['take_profit'] - settings_struct['TRAILING_STOP_LOSS']
+                if DEBUG: print(f"{coin} TP reached, adjusting TP {coins_bought[coin]['take_profit']:.{decimals()}f} and SL {coins_bought[coin]['stop_loss']:.{decimals()}f} accordingly to lock-in profit")
+                continue
 
-        # check that the price is below the stop loss or above take profit (if trailing stop loss not used) and sell if this is the case
-        ORDER = ""
-        if session_struct['sell_all_coins']:
-            ORDER =  "PAUSE_SELL"
-        if lastPrice < coinStopLoss:
-            ORDER =  "STOP_LOSS"
-        if lastPrice > coinTakeProfit and not USE_TRAILING_STOP_LOSS:
-            ORDER =  "TAKE_PROFIT"
-        if holding_timeout_sell_trigger:
-            ORDER =  "HOLDING_TIMEOUT"
+            current_time = round(time.time() * 1000)
+            #print(f'TL:{coinHoldingTimeLimit}, time: {current_time} HOLDING_TIME_LIMIT: {HOLDING_TIME_LIMIT}, TimeLeft: {(coinHoldingTimeLimit - current_time)/1000/60} ')
 
-        if ORDER != "":
+            trade_calculations('holding', priceChange)
+
+            if coinHoldingTimeLimit < current_time and priceChange > settings_struct['HOLDING_PRICE_THRESHOLD']:
+                holding_timeout_sell_trigger = True
+
+            # check that the price is below the stop loss or above take profit (if trailing stop loss not used) and sell if this is the case
+            ORDER = ""
+            if session_struct['sell_all_coins']:
+                ORDER =  "PAUSE_SELL"
+            if lastPrice < coinStopLoss:
+                ORDER =  "STOP_LOSS"
+            if lastPrice > coinTakeProfit and not USE_TRAILING_STOP_LOSS:
+                ORDER =  "TAKE_PROFIT"
+            if holding_timeout_sell_trigger:
+                ORDER =  "TIMEOUT"
+
+            if ORDER != "":
+                print(f"{txcolors.SELL_PROFIT if priceChange >= 0. else txcolors.SELL_LOSS}TP or SL reached, selling {coins_bought[coin]['volume']} {coin}. Bought at: {BUY_PRICE} (Price now: {LAST_PRICE})  - {priceChange:.2f}% - Est: {(QUANTITY * priceChange) / Decimal('100'):.{decimals()}f} {PAIR_WITH}{txcolors.DEFAULT}")
+
+                try:
+                    volume = coin_volume_precision(coin,coins_bought[coin]['volume'],lastPrice)
+                    coins_sold[coin] = order_coin(coin,SIDE_SELL,lastPrice,volume)
+                except Exception as e:
+                    print(f"{txcolors.WARNING} "+ SIDE_SELL + " " + coin + " " +str(e))
+                    continue
+
+                lastPrice = coins_sold[coin]['avgPrice']
+                coins_sold[coin]['orderId'] = coins_bought[coin]['orderId']
+                priceChange = Decimal((lastPrice - buyPrice) / buyPrice * Decimal(100))
+
+                # prevent system from buying this coin for the next TIME_DIFFERENCE minutes
+                volatility_cooloff[coin] = datetime.now()
+
+                # Log trade
+                trade_profit = coins_sold[coin]['tradeWithFee'] - coins_bought[coin]['tradeWithFee']
+                coins_sold[coin]['profit']  = trade_profit
+
+                trade_calculations('sell', priceChange)
+
+                #gogo MOD to trigger trade lost or won and to count lost or won trades
+
+                session_struct['session_profit'] = session_struct['session_profit'] + trade_profit
+
+                holding_timeout_sell_trigger = False
+
+                report_add(f"{ORDER} : {coins_sold[coin]['volume']} {coin} - {buyPrice:.{decimals()}f} - {lastPrice:.{decimals()}f} - Profit: {trade_profit:.{decimals()}f} ({priceChange:.2f}%)",True)
+
+                continue
+
+            if len(coins_bought) > 0:
+                if coins_bought[coin]["sold"]:
+                    continue
+                else:
+                    print(f"TP:{coinTakeProfit:.{decimals()}f}:{coins_bought[coin]['take_profit']:.2f} or SL:{coinStopLoss:.{decimals()}f}:{coins_bought[coin]['stop_loss']:.2f} not yet reached, not selling {coin} for now >> Bought at: {BUY_PRICE} - Now: {LAST_PRICE} : {txcolors.SELL_PROFIT if priceChange >= 0. else txcolors.SELL_LOSS}{priceChange:.2f}% Est: {profit_estimate:.{decimals()}f} {PAIR_WITH} - CIP: {settings_struct['CHANGE_IN_PRICE_MIN']:.2f}/{settings_struct['CHANGE_IN_PRICE_MAX']:.2f} - TAKE_PROFIT: {settings_struct['TAKE_PROFIT']:.2f}{txcolors.DEFAULT}")
+
+    return coins_sold
+
+
+
+def sell_coin(coin) -> Dict:
+    global session_struct, settings_struct, trading_struct
+
+    global hsp_head
+    global FULL_LOG
+    last_price = get_price(False) # don't populate rolling window
+    #last_price = get_price(add_to_historical=True) # don't populate rolling window
+    coins_sold = {}
+    
+    # if saved coins_bought json file exists and it's not empty then load it
+    if os.path.isfile(coins_bought_file_path) and os.stat(coins_bought_file_path).st_size!= 0:
+        with open(coins_bought_file_path) as file:
+                coins_bought = simplejson.load(file, use_decimal=True)
+    try:
+        if(coins_bought[coin]["sold"]):
+            pass
+        else:
+            BUY_PRICE = Decimal(coins_bought[coin]['bought_at'])
+            # coinTakeProfit is the price at which to 'take profit' based on config % markup
+            # coinHoldingTimeLimit is the time limit for holding onto a coin
+            lastPrice = last_price[coin]['price']
+            LAST_PRICE = "{:.8f}".format(lastPrice)
+            buyPrice = Decimal(coins_bought[coin]['bought_at'])
+            BUY_PRICE = "{:.8f}". format(buyPrice)
+
+            # Note: priceChange and priceChangeWithFee are percentages!
+            priceChange = Decimal((lastPrice - buyPrice) / buyPrice * Decimal('100'))
+            ORDER =  "Force Sell"
             print(f"{txcolors.SELL_PROFIT if priceChange >= 0. else txcolors.SELL_LOSS}TP or SL reached, selling {coins_bought[coin]['volume']} {coin}. Bought at: {BUY_PRICE} (Price now: {LAST_PRICE})  - {priceChange:.2f}% - Est: {(QUANTITY * priceChange) / Decimal('100'):.{decimals()}f} {PAIR_WITH}{txcolors.DEFAULT}")
 
             try:
@@ -300,7 +374,6 @@ def sell_coins() -> Dict:
                 coins_sold[coin] = order_coin(coin,SIDE_SELL,lastPrice,volume)
             except Exception as e:
                 print(f"{txcolors.WARNING} "+ SIDE_SELL + " " + coin + " " +str(e))
-                continue
 
             lastPrice = coins_sold[coin]['avgPrice']
             coins_sold[coin]['orderId'] = coins_bought[coin]['orderId']
@@ -311,23 +384,20 @@ def sell_coins() -> Dict:
 
             # Log trade
             trade_profit = coins_sold[coin]['tradeWithFee'] - coins_bought[coin]['tradeWithFee']
-
+            coins_sold[coin]['profit']  = priceChange
+            print(trade_profit)
+            #gogo MOD to trigger trade lost or won and to count lost or won trades
             trade_calculations('sell', priceChange)
 
             #gogo MOD to trigger trade lost or won and to count lost or won trades
-
             session_struct['session_profit'] = session_struct['session_profit'] + trade_profit
+            print(session_struct['session_profit'])
+            report_add(f"{ORDER} : {coins_sold[coin]['volume']} {coin} - {buyPrice:.{decimals()}f} - {lastPrice:.{decimals()}f} - Profit: {trade_profit:.{decimals()}f} ({priceChange:.2f}%)",True)
+            status = True
+    except Exception as e:
+        status = False
 
-            holding_timeout_sell_trigger = False
-
-            report_add(f"{ORDER} - SELL: {coins_sold[coin]['volume']} {coin} - Bought at {buyPrice:.{decimals()}f}, sold at {lastPrice:.{decimals()}f} - Profit: {trade_profit:.{decimals()}f} {PAIR_WITH} ({priceChange:.2f}%)",True)
-
-            continue
-
-        if len(coins_bought) > 0:
-           print(f"TP:{coinTakeProfit:.{decimals()}f}:{coins_bought[coin]['take_profit']:.2f} or SL:{coinStopLoss:.{decimals()}f}:{coins_bought[coin]['stop_loss']:.2f} not yet reached, not selling {coin} for now >> Bought at: {BUY_PRICE} - Now: {LAST_PRICE} : {txcolors.SELL_PROFIT if priceChange >= 0. else txcolors.SELL_LOSS}{priceChange:.2f}% Est: {profit_estimate:.{decimals()}f} {PAIR_WITH} - CIP: {settings_struct['CHANGE_IN_PRICE_MIN']:.2f}/{settings_struct['CHANGE_IN_PRICE_MAX']:.2f} - TAKE_PROFIT: {settings_struct['TAKE_PROFIT']:.2f}{txcolors.DEFAULT}")
-
-    return coins_sold
+    return coins_sold, status
 
 def order_coin(coin: str, order: str, lastPrice: Decimal, volume: Decimal) -> Dict:
     global TRADING_FEE, STOP_LOSS, TAKE_PROFIT, session_struct
@@ -383,7 +453,7 @@ def order_coin(coin: str, order: str, lastPrice: Decimal, volume: Decimal) -> Di
     #
     # just to explain what I am doing here:
     # Market orders are not always filled at one price, we need to find the averages of all 'parts' (fills) of this order.
-    #
+    
     # reset other variables to 0 before use
     FILLS_TOTAL = Decimal('0')
     FILLS_QTY = Decimal('0')
@@ -464,6 +534,7 @@ def update_portfolio(orders: Dict, last_price: Dict, volume: Dict) -> Dict:
             'tradeWithoutFee': orders[coin]['tradeWithoutFee'],
             'stop_loss': -settings_struct['STOP_LOSS'],
             'take_profit': settings_struct['TAKE_PROFIT'],
+            'sold': 0
             }
         # Multi Buy Same Coin ?
         if coin in coins_bought:
@@ -481,12 +552,15 @@ def update_portfolio(orders: Dict, last_price: Dict, volume: Dict) -> Dict:
         with open(coins_bought_file_path, 'w') as file:
             simplejson.dump(coins_bought, file, indent=4, use_decimal=True)
 
-        update_trade_slot()
+        update_trade_slot(coins_bought)
 
-def update_trade_slot() -> None:
+def update_trade_slot(coins_bought) -> None:
     totalTrade = 0
     for coin in coins_bought:
-        totalTrade += coins_bought[coin]['tradeWithoutFee']
+        if not coins_bought[coin]["sold"]:
+            totalTrade += coins_bought[coin]['tradeWithoutFee']
+    print(coins_bought)
+    print("totaltrade",totalTrade)
 
     if totalTrade > 0:
         session_struct['trade_slots'] = int(totalTrade / QUANTITY) + 1
@@ -494,34 +568,33 @@ def update_trade_slot() -> None:
         session_struct['trade_slots'] = 0
 
 
-def remove_from_portfolio(coins_sold: Dict) -> None:
-
-    global session_struct
-
-    '''Remove coins sold due to SL or TP from portfolio'''
+def update_sold_coin(coins_sold:Dict,last_price, single=False) -> None:
+    # if saved coins_bought json file exists and it's not empty then load it
+    if os.path.isfile(coins_bought_file_path) and os.stat(coins_bought_file_path).st_size!= 0:
+        with open(coins_bought_file_path) as file:
+                coins_bought = simplejson.load(file, use_decimal=True)
     for coin,data in coins_sold.items():
-        symbol = coin
         order_id = data['orderId']
-        # code below created by getsec <3
         for bought_coin, bought_coin_data in coins_bought.items():
             if bought_coin_data['orderId'] == order_id:
-                print(f"Sold {bought_coin}, removed order ID {order_id} from history.")
-                coins_bought.pop(bought_coin)
+                print(f"Sold {bought_coin}.")
+                coins_bought[coin]['sold']    = 1          # update the lable
+                coins_bought[coin]['profit']  = data["profit"]
                 with open(coins_bought_file_path, 'w') as file:
                     simplejson.dump(coins_bought, file, indent=4, use_decimal=True)
                 break
-        update_trade_slot()
+        update_trade_slot(coins_bought)
         session_struct['reload_tickers_list'] = True
-
-
+        
 def trade_crypto() -> None:
-    global CONNECTION_ERROR_COUNT, READ_TIMEOUT_COUNT
+    global CONNECTION_ERROR_COUNT, READ_TIMEOUT_COUNT, coins_bought
     try:
-
+        coins_bought = updateCoinBought()
         orders, last_price, volume = buy()
         update_portfolio(orders, last_price, volume)
         coins_sold = sell_coins()
-        remove_from_portfolio(coins_sold)
+        update_sold_coin(coins_sold,last_price)
+        #remove_from_portfolio(coins_sold)
     except ReadTimeout as rt:
         READ_TIMEOUT_COUNT += 1
         print(f'We got a timeout error from from binance. Going to re-loop. Current Count: {READ_TIMEOUT_COUNT}')

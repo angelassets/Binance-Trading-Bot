@@ -16,7 +16,7 @@ or others connected with the program.
 # use for environment variables
 from genericpath import exists
 import os
-#from modules.rsi_signalmod_nigec import FULL_LOG
+from modules.rsi_signalmod_nigec import FULL_LOG
 
 # use if needed to pass args to external modules
 import sys
@@ -113,8 +113,9 @@ def pause_bot() -> None:
            session_struct['sell_all_coins'] = True
 
         # Sell function needs to work even while paused
+        last_price = get_price(True)
         coins_sold = sell_coins()
-        remove_from_portfolio(coins_sold)
+        update_sold_coin(coins_sold, last_price)
         get_price(True)
 
         # pausing here
@@ -191,8 +192,6 @@ if __name__ == '__main__':
     # seed initial prices
     get_price()
 
-    #load previous session parameters
-    session('load')
 
     #report that bot is started to defined communication channels
     report('message', 'Bot initiated')
@@ -203,10 +202,12 @@ if __name__ == '__main__':
     c.start()
 
     while True:
-
+        #load previous session parameters
+        session('load')
         ts = time.time()
 
         pause_bot()
+        updateCoinBought()
 
         #main trading function
         trade_crypto()
